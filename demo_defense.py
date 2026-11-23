@@ -1,9 +1,9 @@
-"""Live Defense Demonstration Script for TA Evaluation.
+"""Live Defense Demonstration Script.
 
 Demonstrates:
-1. Registration of target domain (TA nominated) and its true owner key in auth registry.
+1. Registration of target domain and its true owner key in auth registry.
 2. Legitimate certificate issuance and append-only CT logging.
-3. CA compromise: Malicious / Rogue certificate issued for the TA nominated domain.
+3. CA compromise: Malicious / Rogue certificate issued for the nominated domain.
 4. Vulnerability check: Traditional TLS client blindly accepts the rogue certificate.
 5. CT Monitor execution:
    - Verifies Signed Tree Head (STH) and Merkle inclusion proof.
@@ -36,7 +36,7 @@ def run_live_defense(target_domain: str, owner_name: str, delay: float = 0.5):
     print("\n" + "=" * 78)
     print("  CERTIFICATE TRANSPARENCY & ROGUE-CA DETECTION: LIVE DEFENSE")
     print("=" * 78)
-    print(f"Target Domain (TA Nominated): {target_domain}")
+    print(f"Target Domain: {target_domain}")
     print(f"Simulated Legitimate Owner:   {owner_name}")
     print("=" * 78)
     time.sleep(delay)
@@ -87,7 +87,7 @@ def run_live_defense(target_domain: str, owner_name: str, delay: float = 0.5):
     # -------------------------------------------------------------
     print("\n[STAGE 3] ATTACK SCENARIO: ROOT CA COMPROMISED BY ATTACKER")
     print("-" * 78)
-    print(f"⚠ Attacker generates rogue key pair and forces CA to issue cert for '{target_domain}'...")
+    print(f" Attacker generates rogue key pair and forces CA to issue cert for '{target_domain}'...")
     attacker_priv, attacker_pub = RootCA.generate_key_pair()
     attacker_pub_pem = RootCA.export_public_key_pem(attacker_pub)
     attacker_fp = CTMonitor.compute_key_fingerprint(attacker_pub_pem)
@@ -98,7 +98,7 @@ def run_live_defense(target_domain: str, owner_name: str, delay: float = 0.5):
         validity_days=90,
         is_rogue=True
     )
-    print(f"🚨 ROGUE Certificate Issued by CA:")
+    print(f" ROGUE Certificate Issued by CA:")
     print(f"  Target Domain:          {target_domain}")
     print(f"  Serial Number:          {rogue_cert.serial_number}")
     print(f"  Attacker Key FP:        {attacker_fp} (UNAUTHORIZED!)")
@@ -115,7 +115,7 @@ def run_live_defense(target_domain: str, owner_name: str, delay: float = 0.5):
     for step in trad_res.steps:
         print(f"  {step}")
     print(f"\n  ➔ RESULT: Traditional Client Status = [TRUSTED / ACCEPTED]")
-    print(f"  🚨 SECURITY FAILURE: Traditional client is successfully INTERCEPTED!")
+    print(f"   SECURITY FAILURE: Traditional client is successfully INTERCEPTED!")
     print(f"     Reason: CA signature is valid; client has no CT or owner-key verification.")
     time.sleep(delay)
 
@@ -129,11 +129,11 @@ def run_live_defense(target_domain: str, owner_name: str, delay: float = 0.5):
 
     for r in results:
         if r.cert_serial == str(rogue_cert.serial_number):
-            print(f"🔍 Inspecting Entry for Serial {r.cert_serial}...")
+            print(f"  Inspecting Entry for Serial {r.cert_serial}...")
             print(f"  Merkle Inclusion Proof: ✓ Cryptographically Verified against Signed Tree Head")
             print(f"  Owner Lookup in Auth DB: ✓ Expected '{r.authorized_owner}' ({r.authorized_fingerprint})")
-            print(f"  Actual Key in Cert:     🚨 '{r.cert_fingerprint}' (MISMATCH!)")
-            print(f"\n  🚨 MONITOR ACTION: ROGUE CERTIFICATE FLAGGED!")
+            print(f"  Actual Key in Cert:      '{r.cert_fingerprint}' (MISMATCH!)")
+            print(f"\n   MONITOR ACTION: ROGUE CERTIFICATE FLAGGED!")
             print(f"  ✓ Serial {r.cert_serial} added to Certificate Revocation List (CRL).")
             print(f"  ✓ Updated Root CA CRL generated and signed.")
     time.sleep(delay)
@@ -148,7 +148,7 @@ def run_live_defense(target_domain: str, owner_name: str, delay: float = 0.5):
     for step in ct_res.steps:
         print(f"  {step}")
     print(f"\n  ➔ RESULT: CT-Aware Client Status = [CONNECTION REJECTED & TERMINATED]")
-    print(f"  🔒 SECURITY SUCCESS: CT-Aware client refused connection: {ct_res.rejection_reason}")
+    print(f"   SECURITY SUCCESS: CT-Aware client refused connection: {ct_res.rejection_reason}")
     time.sleep(delay)
 
     # -------------------------------------------------------------
@@ -177,8 +177,8 @@ def run_live_defense(target_domain: str, owner_name: str, delay: float = 0.5):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Live Defense Demonstration for TA Evaluation")
-    parser.add_argument("--domain", default="alice.domain", help="Target domain nominated by TA")
+    parser = argparse.ArgumentParser(description="Live Defense Demonstration")
+    parser.add_argument("--domain", default="alice.domain", help="Target domain")
     parser.add_argument("--owner", default="Alice Smith", help="Legitimate owner name")
     parser.add_argument("--delay", type=float, default=0.2, help="Pacing delay between steps in seconds")
     args = parser.parse_args()
