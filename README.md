@@ -44,19 +44,17 @@ toy_pki_ct/
 
 ---
 
-## 🎯 Live TA Defense Demonstration
+##  Live Defense Demonstration
 
-The professor specified:
-> *TA nominates which domain the rogue certificate should target at defense time; group’s monitor must detect and flag it live.*
 
-You can run the full automated defense demonstration with a single command passing the TA's nominated domain:
+You can run the full automated defense demonstration with a single command passing the nominated domain:
 
 ```bash
 # Example: TA nominates "bank.corp" owned by "Bank Admin"
 python demo_defense.py --domain bank.corp --owner "Bank Admin"
 ```
 
-This single command executes all 7 stages required by the rubric:
+This single command executes 7 stages:
 1. Registers the target domain and its legitimate owner public key in the Authorization Lookup Table.
 2. Issues a legitimate X.509 certificate and logs it to the CT Merkle tree.
 3. Simulates the compromised CA: Deliberately issues a rogue certificate for the target domain using an attacker's key.
@@ -67,7 +65,7 @@ This single command executes all 7 stages required by the rubric:
 
 ---
 
-## 🚀 Individual CLI Commands
+##  Individual CLI Commands
 
 ### 1. Initialize the Root CA
 ```bash
@@ -123,7 +121,7 @@ python test_monitor.py
 
 ---
 
-## 🔒 Security Threat Model & Mechanism Breakdown
+##  Security Threat Model & Mechanism Breakdown
 
 1. **Threat Model**:
    - The Root CA is compromised or has a rogue insider.
